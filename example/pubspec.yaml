@@ -1,0 +1,17 @@
+name: polaris_radar_example
+description: Example app for polaris_radar.
+publish_to: none
+version: 1.0.0
+
+environment:
+  sdk: ">=3.0.0 <4.0.0"
+  flutter: ">=3.10.0"
+
+dependencies:
+  flutter:
+    sdk: flutter
+  polaris_radar:
+    path: ../
+
+flutter:
+  uses-material-design: true
