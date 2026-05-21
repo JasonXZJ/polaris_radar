@@ -36,6 +36,9 @@ class _RadarDemoPageState extends State<RadarDemoPage> {
   static const _avgData2 = [60.0, 55.0, 70.0, 50.0, 65.0, 55.0];
 
   bool _toggled = false;
+  int? _selectedDataSetIndex;
+  bool _interactive = true;
+  String _touchInfo = '点击数据点查看数值';
 
   PolarisRadarData get _chartData => PolarisRadarData(
         axisLabels: _axisLabels,
@@ -103,6 +106,21 @@ class _RadarDemoPageState extends State<RadarDemoPage> {
         backgroundColor: const Color(0xFF0D1117),
         title: const Text('Polaris Radar'),
         actions: [
+          Row(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.touch_app,
+                  color: Color(0xFF4FC3F7), size: 16),
+              SizedBox(
+                height: 20,
+                child: Switch(
+                  value: _interactive,
+                  onChanged: (v) => setState(() => _interactive = v),
+                  materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
+              ),
+            ],
+          ),
           TextButton(
             onPressed: () => setState(() => _toggled = !_toggled),
             child: Text(
@@ -125,7 +143,26 @@ class _RadarDemoPageState extends State<RadarDemoPage> {
                   Expanded(
                     child: PolarisRadarChart(
                       data: data,
+                      selectedDataSetIndex: _selectedDataSetIndex,
+                      interactive: _interactive,
                       duration: const Duration(milliseconds: 500),
+                      touchData: PolarisRadarTouchData(
+                        onTouch: (response) {
+                          setState(() {
+                            _selectedDataSetIndex = response?.dataSetIndex;
+                            if (response != null && response.axisIndex != null) {
+                              _touchInfo = '${response.dataSetLabel ?? ''} - '
+                                  '${response.axisLabel ?? ''}: '
+                                  '${response.value?.toStringAsFixed(1) ?? ''}';
+                            } else if (response != null) {
+                              _touchInfo =
+                                  '选中: ${response.dataSetLabel ?? ''}';
+                            } else {
+                              _touchInfo = '点击数据点查看数值';
+                            }
+                          });
+                        },
+                      ),
                     ),
                   ),
                   const SizedBox(width: 16),
@@ -134,12 +171,20 @@ class _RadarDemoPageState extends State<RadarDemoPage> {
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: data.dataSets
-                          .map(
-                            (ds) => Padding(
+                      children: data.dataSets.asMap().entries.map(
+                            (entry) => Padding(
                               padding: const EdgeInsets.symmetric(vertical: 8),
                               child: RadarLegendItem(
-                                dataSet: ds,
+                                dataSet: entry.value,
+                                isSelected: _selectedDataSetIndex == entry.key,
+                                onTap: () {
+                                  setState(() {
+                                    _selectedDataSetIndex =
+                                        _selectedDataSetIndex == entry.key
+                                            ? null
+                                            : entry.key;
+                                  });
+                                },
                                 lineWidth: 36,
                                 textStyle: const TextStyle(
                                   color: Colors.white70,
@@ -150,6 +195,25 @@ class _RadarDemoPageState extends State<RadarDemoPage> {
                           )
                           .toList(),
                     ),
+                  ),
+                ],
+              ),
+            ),
+            const SizedBox(height: 16),
+            Container(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              decoration: BoxDecoration(
+                color: const Color(0xFF1A2332),
+                borderRadius: BorderRadius.circular(6),
+              ),
+              child: Row(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  const Icon(Icons.touch_app, color: Color(0xFF4FC3F7), size: 16),
+                  const SizedBox(width: 8),
+                  Text(
+                    _touchInfo,
+                    style: const TextStyle(color: Colors.white70, fontSize: 13),
                   ),
                 ],
               ),

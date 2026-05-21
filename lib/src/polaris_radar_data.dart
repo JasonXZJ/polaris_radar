@@ -231,3 +231,78 @@ class PolarisRadarData {
         titlePositionFactor: titlePositionFactor ?? this.titlePositionFactor,
       );
 }
+
+// ── 触摸交互 ──────────────────────────────────────────────────────────────────
+
+/// 触摸回调类型。
+///
+/// [response] 为 `null` 表示触摸在空白区域（未命中任何数据点）。
+typedef PolarisTouchCallback = void Function(PolarisTouchResponse? response);
+
+/// 触摸命中的数据点信息。
+class PolarisTouchResponse {
+  /// 创建一个触摸响应。
+  const PolarisTouchResponse({
+    this.dataSetIndex,
+    this.axisIndex,
+    this.value,
+    this.axisLabel,
+    this.dataSetLabel,
+    required this.localPosition,
+  });
+
+  /// 被触摸的数据集索引。
+  final int? dataSetIndex;
+
+  /// 被触摸的轴索引。
+  final int? axisIndex;
+
+  /// 触摸点的数据值。
+  final double? value;
+
+  /// 轴标签文字。
+  final String? axisLabel;
+
+  /// 数据集标签文字。
+  final String? dataSetLabel;
+
+  /// 触摸在图表坐标系中的位置。
+  final Offset localPosition;
+}
+
+/// 雷达图触摸交互配置。
+class PolarisRadarTouchData {
+  /// 创建一个触摸配置。
+  const PolarisRadarTouchData({
+    this.onTouch,
+    this.touchSpotThreshold = 12.0,
+    this.edgeTouchThreshold = 15.0,
+    this.highlightColor,
+    this.highlightRadiusFactor = 1.8,
+    this.showTooltip = true,
+    this.tooltipTextStyle,
+  });
+
+  /// 触摸回调。
+  final PolarisTouchCallback? onTouch;
+
+  /// 顶点触摸命中阈值（逻辑像素），默认 12.0。
+  final double touchSpotThreshold;
+
+  /// 边缘触摸命中阈值（逻辑像素），默认 15.0。
+  ///
+  /// 点击数据集的连线时，距离线段小于此值即命中。
+  final double edgeTouchThreshold;
+
+  /// 高亮颜色，默认使用该数据集的线条颜色。
+  final Color? highlightColor;
+
+  /// 高亮时顶点放大的倍数，默认 1.8。
+  final double highlightRadiusFactor;
+
+  /// 是否显示 tooltip 浮层。
+  final bool showTooltip;
+
+  /// Tooltip 文字样式。
+  final TextStyle? tooltipTextStyle;
+}

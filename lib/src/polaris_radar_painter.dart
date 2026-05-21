@@ -13,9 +13,17 @@ import 'polaris_radar_data.dart';
 ///   4. 轴标题
 ///   5. 各数据集（填充 → 边框 → 顶点标记）
 class PolarisRadarPainter extends CustomPainter {
-  PolarisRadarPainter({required this.data});
+  PolarisRadarPainter({
+    required this.data,
+    this.touchedResponse,
+    this.touchData,
+    this.selectedDataSetIndex,
+  });
 
   final PolarisRadarData data;
+  final PolarisTouchResponse? touchedResponse;
+  final PolarisRadarTouchData? touchData;
+  final int? selectedDataSetIndex;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -180,6 +188,9 @@ class PolarisRadarPainter extends CustomPainter {
 
   // ── 6. 数据集 ─────────────────────────────────────────────────────────────────
 
+  bool _isDimmed(int idx) =>
+      selectedDataSetIndex != null && idx != selectedDataSetIndex;
+
   void _drawDataSets(
     Canvas canvas,
     Offset center,
@@ -209,11 +220,14 @@ class PolarisRadarPainter extends CustomPainter {
 
     // 先画所有填充（底层），再画边框和点（顶层）
     for (var idx = 0; idx < data.dataSets.length; idx++) {
-      _drawFill(canvas, center, radius, data.dataSets[idx], points[idx]);
+      _drawFill(canvas, center, radius, data.dataSets[idx], points[idx],
+          dimmed: _isDimmed(idx));
     }
     for (var idx = 0; idx < data.dataSets.length; idx++) {
-      _drawBorder(canvas, data.dataSets[idx], points[idx]);
-      _drawPoints(canvas, data.dataSets[idx], points[idx]);
+      _drawBorder(canvas, data.dataSets[idx], points[idx],
+          dimmed: _isDimmed(idx));
+      _drawPoints(canvas, data.dataSets[idx], points[idx], dataSetIndex: idx,
+          dimmed: _isDimmed(idx));
     }
   }
 
@@ -222,8 +236,9 @@ class PolarisRadarPainter extends CustomPainter {
     Offset center,
     double radius,
     PolarisDataSet ds,
-    List<Offset> offsets,
-  ) {
+    List<Offset> offsets, {
+    bool dimmed = false,
+  }) {
     final fill = ds.fillColor;
     if ((fill == null || fill == Colors.transparent) && ds.fillGradient == null) {
       return;
@@ -236,8 +251,11 @@ class PolarisRadarPainter extends CustomPainter {
       paint.shader = ds.fillGradient!.createShader(
         Rect.fromCircle(center: center, radius: radius),
       );
+      if (dimmed) {
+        paint.color = Colors.white.withValues(alpha: 0.1);
+      }
     } else {
-      paint.color = fill!;
+      paint.color = dimmed ? fill!.withValues(alpha: fill.a * 0.1) : fill!;
     }
     canvas.drawPath(path, paint);
   }
@@ -245,11 +263,14 @@ class PolarisRadarPainter extends CustomPainter {
   void _drawBorder(
     Canvas canvas,
     PolarisDataSet ds,
-    List<Offset> offsets,
-  ) {
+    List<Offset> offsets, {
+    bool dimmed = false,
+  }) {
     final style = ds.lineStyle;
     final paint = Paint()
-      ..color = style.color
+      ..color = dimmed
+          ? style.color.withValues(alpha: style.color.a * 0.25)
+          : style.color
       ..strokeWidth = style.width
       ..style = PaintingStyle.stroke
       ..strokeCap = StrokeCap.round
@@ -265,16 +286,46 @@ class PolarisRadarPainter extends CustomPainter {
   void _drawPoints(
     Canvas canvas,
     PolarisDataSet ds,
-    List<Offset> offsets,
-  ) {
+    List<Offset> offsets, {
+    int dataSetIndex = 0,
+    bool dimmed = false,
+  }) {
     if (ds.pointShape == RadarPointShape.none) return;
 
     final paint = Paint()
-      ..color = ds.lineStyle.color
+      ..color = dimmed
+          ? ds.lineStyle.color.withValues(alpha: ds.lineStyle.color.a * 0.25)
+          : ds.lineStyle.color
       ..style = PaintingStyle.fill;
 
-    for (final pt in offsets) {
-      _drawPointShape(canvas, pt, ds.pointSize, paint, ds.pointShape);
+    for (var i = 0; i < offsets.length; i++) {
+      final pt = offsets[i];
+      final isHighlighted = touchedResponse != null &&
+          touchedResponse!.dataSetIndex == dataSetIndex &&
+          touchedResponse!.axisIndex == i;
+
+      if (isHighlighted) {
+        final td = touchData;
+        final hlPaint = Paint()
+          ..color = td?.highlightColor ?? ds.lineStyle.color
+          ..style = PaintingStyle.fill;
+        // 外发光效果
+        final glowPaint = Paint()
+          ..color = (td?.highlightColor ?? ds.lineStyle.color).withValues(alpha: 0.3)
+          ..style = PaintingStyle.fill;
+        final glowSize = ds.pointSize * (td?.highlightRadiusFactor ?? 1.8) * 1.6;
+        _drawPointShape(canvas, pt, glowSize, glowPaint, ds.pointShape);
+        // 高亮放大的顶点
+        _drawPointShape(
+          canvas,
+          pt,
+          ds.pointSize * (td?.highlightRadiusFactor ?? 1.8),
+          hlPaint,
+          ds.pointShape,
+        );
+      } else {
+        _drawPointShape(canvas, pt, ds.pointSize, paint, ds.pointShape);
+      }
     }
   }
 
@@ -362,5 +413,9 @@ class PolarisRadarPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(PolarisRadarPainter old) => old.data != data;
+  bool shouldRepaint(PolarisRadarPainter old) =>
+      old.data != data ||
+      old.touchedResponse != touchedResponse ||
+      old.touchData != touchData ||
+      old.selectedDataSetIndex != selectedDataSetIndex;
 }
