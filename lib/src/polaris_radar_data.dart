@@ -114,6 +114,7 @@ class PolarisRadarData {
     this.maxValue,
     this.minValue = 0,
     this.tickCount = 5,
+    this.tickLabels,
     this.tickLabelStyle,
     this.axisLabelStyle,
     this.gridLineStyle = const RadarLineStyle(
@@ -142,6 +143,9 @@ class PolarisRadarData {
 
   /// 同心圆/多边形圈数
   final int tickCount;
+
+  /// 自定义刻度标签，为 null 时自动根据 [minValue] / [maxValue] 等分生成
+  final List<String>? tickLabels;
 
   /// 刻度数字文字样式
   final TextStyle? tickLabelStyle;
@@ -191,6 +195,7 @@ class PolarisRadarData {
       ),
       minValue: lerpDouble(minValue, other.minValue, t)!,
       tickCount: other.tickCount,
+      tickLabels: other.tickLabels,
       tickLabelStyle: TextStyle.lerp(tickLabelStyle, other.tickLabelStyle, t),
       axisLabelStyle: TextStyle.lerp(axisLabelStyle, other.axisLabelStyle, t),
       gridLineStyle: gridLineStyle.lerp(other.gridLineStyle, t),
@@ -208,6 +213,7 @@ class PolarisRadarData {
     double? maxValue,
     double? minValue,
     int? tickCount,
+    List<String>? tickLabels,
     TextStyle? tickLabelStyle,
     TextStyle? axisLabelStyle,
     RadarLineStyle? gridLineStyle,
@@ -222,6 +228,7 @@ class PolarisRadarData {
         maxValue: maxValue ?? this.maxValue,
         minValue: minValue ?? this.minValue,
         tickCount: tickCount ?? this.tickCount,
+        tickLabels: tickLabels ?? this.tickLabels,
         tickLabelStyle: tickLabelStyle ?? this.tickLabelStyle,
         axisLabelStyle: axisLabelStyle ?? this.axisLabelStyle,
         gridLineStyle: gridLineStyle ?? this.gridLineStyle,

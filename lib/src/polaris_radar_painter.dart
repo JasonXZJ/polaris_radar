@@ -135,16 +135,22 @@ class PolarisRadarPainter extends CustomPainter {
   // ── 4. 刻度数字 ───────────────────────────────────────────────────────────────
 
   void _drawTickLabels(Canvas canvas, Offset center, double radius) {
-    final style = data.tickLabelStyle ??
-        const TextStyle(color: Color(0xFF888888), fontSize: 10);
+    final style = data.tickLabelStyle;
+    if (style == null) return;
 
+    final customLabels = data.tickLabels;
     final range = data.effectiveMax - data.minValue;
     for (var i = 0; i <= data.tickCount; i++) {
-      final value = data.minValue + range * i / data.tickCount;
       final r = radius * i / data.tickCount;
 
+      final text = (customLabels != null && i < customLabels.length)
+          ? customLabels[i]
+          : _formatTick(data.minValue + range * i / data.tickCount);
+
+      if (text.isEmpty) continue;
+
       final tp = TextPainter(
-        text: TextSpan(text: _formatTick(value), style: style),
+        text: TextSpan(text: text, style: style),
         textDirection: TextDirection.ltr,
       )..layout();
 
@@ -167,8 +173,8 @@ class PolarisRadarPainter extends CustomPainter {
     int n,
     double step,
   ) {
-    final style = data.axisLabelStyle ??
-        const TextStyle(color: Colors.white, fontSize: 14);
+    final style = data.axisLabelStyle;
+    if (style == null) return;
 
     for (var i = 0; i < n; i++) {
       final angle = step * i - pi / 2;
