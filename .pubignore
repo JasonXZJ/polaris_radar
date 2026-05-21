@@ -1,0 +1,25 @@
+# Tests - 消费者不需要
+test/
+
+# Example 平台工程文件 - 保留 lib/ 和 pubspec.yaml 即可
+example/android/
+example/ios/
+example/macos/
+example/web/
+example/analysis_options.yaml
+
+# IDE 配置
+.idea/
+.vscode/
+*.iml
+
+# 内部工具配置
+.claude/
+
+# 构建产物
+build/
+coverage/
+
+# 本地项目文件
+.gitignore
+.metadata
