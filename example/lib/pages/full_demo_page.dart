@@ -233,8 +233,8 @@ class _FullDemoPageState extends State<FullDemoPage> {
             Expanded(
               child: ListView(
                 children: [
-                  _buildSectionTitle('📐 基础设置'),
-                  _buildSwitchRow('交互模式', _interactive,
+                  _buildSectionTitle(Icons.tune, '基础设置'),
+                  _buildSwitchRow('是否可交互', _interactive,
                       (v) => setState(() => _interactive = v)),
                   const SizedBox(height: 4),
                   _buildDataToggle(),
@@ -253,7 +253,7 @@ class _FullDemoPageState extends State<FullDemoPage> {
                       (v) => setState(() => _titlePositionFactor = v)),
 
                   const SizedBox(height: 16),
-                  _buildSectionTitle('🎨 网格与背景'),
+                  _buildSectionTitle(Icons.palette_outlined, '网格与背景'),
                   _buildColorRow('背景色', _bgColor, _bgPresets,
                       (c) => setState(() => _bgColor = c)),
                   _buildSlider('网格线粗细', _gridLineWidth, 0.5, 3.0,
@@ -266,7 +266,7 @@ class _FullDemoPageState extends State<FullDemoPage> {
                       (c) => setState(() => _axisLineColor = c)),
 
                   const SizedBox(height: 16),
-                  _buildSectionTitle('📝 标签样式'),
+                  _buildSectionTitle(Icons.text_fields, '标签样式'),
                   _buildSwitchRow('轴标题', _showAxisLabels,
                       (v) => setState(() => _showAxisLabels = v)),
                   if (_showAxisLabels)
@@ -285,7 +285,7 @@ class _FullDemoPageState extends State<FullDemoPage> {
                         (c) => setState(() => _tickLabelColor = c)),
 
                   const SizedBox(height: 16),
-                  _buildSectionTitle('📊 数据集'),
+                  _buildSectionTitle(Icons.bar_chart, '数据集'),
                   _buildDataSetSelector(),
                   const SizedBox(height: 8),
                   _buildColorRow('填充色', _fillColors[_editingDataSetIndex], _linePresets,
@@ -333,12 +333,20 @@ class _FullDemoPageState extends State<FullDemoPage> {
 
   // ── UI 构建辅助 ──
 
-  Widget _buildSectionTitle(String title) {
+  Widget _buildSectionTitle(IconData icon, String title) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
-      child: Text(title,
-          style: const TextStyle(
-              color: Colors.white70, fontSize: 14, fontWeight: FontWeight.w600)),
+      child: Row(
+        children: [
+          Icon(icon, color: const Color(0xFF4FC3F7), size: 16),
+          const SizedBox(width: 6),
+          Text(title,
+              style: const TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600)),
+        ],
+      ),
     );
   }
 
