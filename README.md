@@ -1,27 +1,33 @@
+**English** | [中文](README_zh.md)
+
 # polaris_radar
 
-高度可定制的 Flutter 雷达图组件库，零外部依赖。
+A highly customizable Flutter radar chart library with zero external dependencies.
 
-## 特性
+## Features
 
-- **数据集独立边框** — 每条数据可单独设置实线或虚线（`dashArray`）
-- **自定义顶点标记** — 支持 `circle` / `square` / `diamond` / `triangle` 四种形状
-- **网格形状** — 圆形或正多边形网格
-- **隐式动画** — 数据更新时自动平滑过渡
-- **内置图例组件** — `RadarLegendItem` 自动匹配线条样式与标记形状
-- **零依赖** — 纯 Flutter 实现，无需额外包
+- **Per-dataset borders** — solid or dashed (`dashArray`) per data series
+- **Custom vertex markers** — `circle` / `square` / `diamond` / `triangle` / `none`
+- **Grid shapes** — circular or polygon
+- **Fill modes** — solid color or gradient fill per dataset
+- **Touch interaction** — tap to detect vertices and edges, with highlight and tooltip
+- **Legend widget** — `RadarLegendItem` matches line style and marker shape automatically
+- **Dataset dimming** — `selectedDataSetIndex` highlights one series and dims others
+- **Custom tick labels** — override auto-generated numeric labels
+- **Implicit animations** — smooth transitions when data changes
+- **Zero dependencies** — pure Flutter, no external packages required
 
-## 快速开始
+## Getting started
 
-在 `pubspec.yaml` 中添加依赖：
+Add to your `pubspec.yaml`:
 
 ```yaml
 dependencies:
   polaris_radar:
-    path: ../polaris_radar   # 或从 pub.dev 引入
+    path: ../polaris_radar   # or pub.dev version once published
 ```
 
-## 使用示例
+## Usage
 
 ```dart
 import 'package:polaris_radar/polaris_radar.dart';
@@ -35,17 +41,19 @@ PolarisRadarChart(
     backgroundColor: const Color(0xFF161C2E),
     gridLineStyle: const RadarLineStyle(color: Color(0xFF2E3A55), width: 1),
     axisLineStyle: const RadarLineStyle(color: Color(0xFF2E3A55), width: 1),
+    tickLabelStyle: const TextStyle(color: Color(0xFF666F8A), fontSize: 9),
+    axisLabelStyle: const TextStyle(color: Colors.white, fontSize: 14),
     dataSets: [
-      // 蓝色实线 + 圆形顶点标记
+      // Solid blue line, circle markers
       PolarisDataSet(
         label: '角色 A',
         dataEntries: [80, 60, 70, 50, 90, 40],
-        fillColor: Colors.blue.withOpacity(0.15),
+        fillColor: Colors.blue.withValues(alpha: 0.15),
         lineStyle: RadarLineStyle(color: Colors.blue, width: 2),
         pointShape: RadarPointShape.circle,
         pointSize: 4.5,
       ),
-      // 红色虚线 + 三角形顶点标记
+      // Dashed red line, triangle markers
       PolarisDataSet(
         label: '平均值',
         dataEntries: [65, 55, 60, 55, 65, 50],
@@ -53,7 +61,7 @@ PolarisRadarChart(
         lineStyle: RadarLineStyle(
           color: Colors.red,
           width: 2,
-          dashArray: [6, 4],   // 6px 实线, 4px 间隔
+          dashArray: [6, 4],   // 6px dash, 4px gap
         ),
         pointShape: RadarPointShape.triangle,
         pointSize: 4.5,
@@ -64,68 +72,138 @@ PolarisRadarChart(
 )
 ```
 
-### 图例组件
+### Touch interaction
+
+```dart
+PolarisRadarChart(
+  data: myData,
+  touchData: PolarisRadarTouchData(
+    onTouch: (response) {
+      if (response != null) {
+        print('${response.axisLabel}: ${response.value}');
+      }
+    },
+  ),
+)
+```
+
+### Legend
 
 ```dart
 RadarLegendItem(
   dataSet: myDataSet,
   lineWidth: 36,
-  textStyle: TextStyle(color: Colors.white70, fontSize: 13),
+  textStyle: const TextStyle(color: Colors.white70, fontSize: 13),
 )
 ```
 
-## API 参考
+## API reference
+
+### `PolarisRadarChart`
+
+| Property | Type | Description |
+|---|---|---|
+| `data` | `PolarisRadarData` | Chart data and configuration |
+| `duration` | `Duration` | Animation duration on data change (default 300ms) |
+| `curve` | `Curve` | Animation curve (default `easeInOut`) |
+| `touchData` | `PolarisRadarTouchData?` | Touch interaction config |
+| `selectedDataSetIndex` | `int?` | Highlight one dataset, dim others |
+| `interactive` | `bool` | Enable/disable touch (default `true`) |
 
 ### `PolarisRadarData`
 
-雷达图的全部配置项。
-
-| 属性 | 类型 | 说明 |
+| Property | Type | Description |
 |---|---|---|
-| `axisLabels` | `List<String>` | 各轴标题，同时决定轴数量（至少 3 个） |
-| `dataSets` | `List<PolarisDataSet>` | 数据集列表 |
-| `maxValue` | `double?` | 数据最大值，为 null 时自动检测 |
-| `minValue` | `double` | 最小值（圆心），默认 `0` |
-| `tickCount` | `int` | 同心网格圈数 |
-| `gridShape` | `RadarGridShape` | 网格形状：`circle` 或 `polygon` |
-| `backgroundColor` | `Color` | 雷达图背景色 |
-| `gridLineStyle` | `RadarLineStyle` | 同心网格线样式 |
-| `axisLineStyle` | `RadarLineStyle` | 径向轴线样式 |
-| `tickLabelStyle` | `TextStyle?` | 刻度数字文字样式 |
-| `axisLabelStyle` | `TextStyle?` | 轴标题文字样式 |
-| `titlePositionFactor` | `double` | 轴标题距雷达边缘的额外比例（0 = 紧贴边缘） |
+| `axisLabels` | `List<String>` | Axis titles — also determines axis count (≥ 3) |
+| `dataSets` | `List<PolarisDataSet>` | One entry per data series |
+| `maxValue` | `double?` | Max value; auto-detected if null |
+| `minValue` | `double` | Min value (center). Default `0` |
+| `tickCount` | `int` | Number of concentric rings |
+| `tickLabels` | `List<String>?` | Custom tick labels; auto-generated if null |
+| `gridShape` | `RadarGridShape` | `circle` or `polygon` |
+| `backgroundColor` | `Color` | Fill color of the radar background |
+| `gridLineStyle` | `RadarLineStyle` | Concentric grid ring style |
+| `axisLineStyle` | `RadarLineStyle` | Radial axis line style |
+| `tickLabelStyle` | `TextStyle?` | Tick number text style (null to hide) |
+| `axisLabelStyle` | `TextStyle?` | Axis title text style (null to hide) |
+| `titlePositionFactor` | `double` | Extra padding beyond radar edge (0 = tight) |
 
 ### `PolarisDataSet`
 
-单条数据集的完整描述。
-
-| 属性 | 类型 | 说明 |
+| Property | Type | Description |
 |---|---|---|
-| `dataEntries` | `List<double>` | 数据值数组，长度必须与 `axisLabels` 一致 |
-| `fillColor` | `Color?` | 多边形填充色 |
-| `fillGradient` | `Gradient?` | 多边形填充渐变（优先于 `fillColor`） |
-| `lineStyle` | `RadarLineStyle` | 边框颜色、粗细、虚线模式 |
-| `pointShape` | `RadarPointShape` | 顶点标记形状 |
-| `pointSize` | `double` | 标记半径（逻辑像素） |
-| `label` | `String` | 图例标签文字 |
+| `dataEntries` | `List<double>` | Values — must match `axisLabels` length |
+| `fillColor` | `Color?` | Polygon fill color (`Color?`) |
+| `fillGradient` | `Gradient?` | Polygon fill gradient (overrides `fillColor`) |
+| `lineStyle` | `RadarLineStyle` | Border color, width, dash pattern |
+| `pointShape` | `RadarPointShape` | Marker shape at each vertex |
+| `pointSize` | `double` | Marker radius in logical pixels |
+| `label` | `String` | Legend label text |
 
 ### `RadarLineStyle`
 
-线条样式配置。
-
-| 属性 | 类型 | 说明 |
+| Property | Type | Description |
 |---|---|---|
-| `color` | `Color` | 线条颜色 |
-| `width` | `double` | 线条宽度 |
-| `dashArray` | `List<double>?` | `null` = 实线；`[6, 4]` = 6px 实线 + 4px 间隔 |
+| `color` | `Color` | Line color (default `0xFF555555`) |
+| `width` | `double` | Line width (default `1.5`) |
+| `dashArray` | `List<double>?` | `null` = solid; `[6, 4]` = 6px dash + 4px gap |
 
-### 枚举
+### `PolarisRadarTouchData`
+
+| Property | Type | Description |
+|---|---|---|
+| `onTouch` | `PolarisTouchCallback?` | Callback with `PolarisTouchResponse?` |
+| `touchSpotThreshold` | `double` | Vertex hit radius in logical pixels (default 12) |
+| `edgeTouchThreshold` | `double` | Edge hit distance in logical pixels (default 15) |
+| `highlightColor` | `Color?` | Highlight color (defaults to line color) |
+| `highlightRadiusFactor` | `double` | Highlighted vertex size multiplier (default 1.8) |
+| `showTooltip` | `bool` | Show tooltip on vertex hit (default `true`) |
+| `tooltipTextStyle` | `TextStyle?` | Tooltip text style |
+
+### `RadarLegendItem`
+
+| Property | Type | Description |
+|---|---|---|
+| `dataSet` | `PolarisDataSet` | The dataset to render |
+| `lineWidth` | `double` | Width of the preview line (default 32) |
+| `textStyle` | `TextStyle?` | Label text style |
+| `spacing` | `double` | Gap between line and text (default 8) |
+| `isSelected` | `bool` | Whether this item is selected |
+| `onTap` | `VoidCallback?` | Tap callback |
+| `selectedTextStyle` | `TextStyle?` | Text style when selected |
+
+### Enums
 
 ```dart
 enum RadarGridShape  { circle, polygon }
 enum RadarPointShape { none, circle, square, diamond, triangle }
 ```
 
-## 许可协议
+## Screenshots
+
+![Full demo — chart](example/screenshots/full_demo_chart.png)
+Full demo page — 6-axis radar chart with legend and touch feedback.
+
+
+![Controls panel 1](example/screenshots/full_demo_controls1.png)            
+Controls panel — scrollable parameter settings (top).    
+
+![Controls panel 2](example/screenshots/full_demo_controls2.png)            
+Controls panel — scrollable parameter settings (middle). 
+
+![Controls panel 3](example/screenshots/full_demo_controls3.png)            
+Controls panel — scrollable parametersettings (bottom).
+
+![Thumbnail cards](example/screenshots/thumbnail_list.png)
+Thumbnail card list — miniature radar charts.
+
+## Demo
+
+The `example/` directory contains a full-featured demo app with:
+
+- **Full demo page** — 6-axis radar chart with 3 datasets, interactive control panel for all parameters
+- **Thumbnail card list** — "My Reports" style cards with miniature radar charts and magic attribute tags
+
+## License
 
 MIT
