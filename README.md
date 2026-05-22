@@ -181,21 +181,29 @@ enum RadarPointShape { none, circle, square, diamond, triangle }
 
 ## Screenshots
 
-![Full demo — chart](example/screenshots/full_demo_chart.png)
-Full demo page — 6-axis radar chart with legend and touch feedback.
+<img src="example/screenshots/full_demo_chart.png" width="320" alt="Full demo — chart" />
+
+*Full demo page — 6-axis radar chart with legend and touch feedback.*
 
 
-![Controls panel 1](example/screenshots/full_demo_controls1.png)            
-Controls panel — scrollable parameter settings (top).    
+<img src="example/screenshots/full_demo_controls1.png" width="320" alt="Controls panel 1" />
 
-![Controls panel 2](example/screenshots/full_demo_controls2.png)            
-Controls panel — scrollable parameter settings (middle). 
+*Controls panel — scrollable parameter settings (top).*
 
-![Controls panel 3](example/screenshots/full_demo_controls3.png)            
-Controls panel — scrollable parametersettings (bottom).
+<img src="example/screenshots/full_demo_controls2.png" width="320" alt="Controls panel 2" />
 
-![Thumbnail cards](example/screenshots/thumbnail_list.png)
-Thumbnail card list — miniature radar charts.
+*Controls panel — scrollable parameter settings (middle).*
+
+
+<img src="example/screenshots/full_demo_controls3.png" width="320" alt="Controls panel 3" />
+
+*Controls panel — scrollable parameter settings (bottom).*
+
+
+<img src="example/screenshots/thumbnail_list.png" width="320" alt="Thumbnail cards" />
+
+*Thumbnail card list — miniature radar charts.*
+
 
 ## Demo
 

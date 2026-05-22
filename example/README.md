@@ -6,20 +6,25 @@ A comprehensive demo application showcasing all features of the polaris_radar ch
 
 ## Screenshots
 
-![Full demo chart](screenshots/full_demo_chart.png)
-Full demo page — 6-axis radar chart with legend and touch feedback.
+<img src="screenshots/full_demo_chart.png" width="320" alt="Full demo chart" />
 
-![Controls panel 1](screenshots/full_demo_controls1.png)
-Controls panel — scrollable parameter settings (top).
+*Full demo page — 6-axis radar chart with legend and touch feedback.*
 
-![Controls panel 2](screenshots/full_demo_controls2.png)
-Controls panel — scrollable parameter settings (middle).
+<img src="screenshots/full_demo_controls1.png" width="320" alt="Controls panel 1" />
 
-![Controls panel 3](screenshots/full_demo_controls3.png)
-Controls panel — scrollable parameter settings (bottom).
+*Controls panel — scrollable parameter settings (top).*
 
-![Thumbnail cards](screenshots/thumbnail_list.png)
-Thumbnail card list — miniature radar charts.
+<img src="screenshots/full_demo_controls2.png" width="320" alt="Controls panel 2" />
+
+*Controls panel — scrollable parameter settings (middle).*
+
+<img src="screenshots/full_demo_controls3.png" width="320" alt="Controls panel 3" />
+
+*Controls panel — scrollable parameter settings (bottom).*
+
+<img src="screenshots/thumbnail_list.png" width="320" alt="Thumbnail cards" />
+
+*Thumbnail card list — miniature radar charts.*
 
 ## Pages
 

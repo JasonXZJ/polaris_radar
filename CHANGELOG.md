@@ -1,4 +1,4 @@
-## 1.0.0
+## 1.0.2
 
 - Initial stable release.
 - Radar chart widget with implicit animations (`PolarisRadarChart`).

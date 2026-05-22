@@ -181,20 +181,25 @@ enum RadarPointShape { none, circle, square, diamond, triangle }
 
 ## 屏幕截图
 
-![全功能展示](example/screenshots/full_demo_chart.png)
-全功能展示页 — 6 轴雷达图及图例、触摸反馈。
+<img src="example/screenshots/full_demo_chart.png" width="320" alt="全功能展示" />
 
-![操作按钮 1](example/screenshots/full_demo_controls1.png)
-操作按钮区域 — 可滚动参数设置面板（上方）。
+*全功能展示页 — 6 轴雷达图及图例、触摸反馈。*
 
-![操作按钮 2](example/screenshots/full_demo_controls2.png)
-操作按钮区域 — 可滚动参数设置面板（中部）。
+<img src="example/screenshots/full_demo_controls1.png" width="320" alt="操作按钮 1" />
 
-![操作按钮 3](example/screenshots/full_demo_controls3.png)
-操作按钮区域 — 可滚动参数设置面板（下方）。
+*操作按钮区域 — 可滚动参数设置面板（上方）。*
 
-![缩略图列表](example/screenshots/thumbnail_list.png)
-缩略图卡片列表 — 内嵌缩略雷达图。
+<img src="example/screenshots/full_demo_controls2.png" width="320" alt="操作按钮 2" />
+
+*操作按钮区域 — 可滚动参数设置面板（中部）。*
+
+<img src="example/screenshots/full_demo_controls3.png" width="320" alt="操作按钮 3" />
+
+*操作按钮区域 — 可滚动参数设置面板（下方）。*
+
+<img src="example/screenshots/thumbnail_list.png" width="320" alt="缩略图列表" />
+
+*缩略图卡片列表 — 内嵌缩略雷达图。*
 
 ## Demo 示例
 
