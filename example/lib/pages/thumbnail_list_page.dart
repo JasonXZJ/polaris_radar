@@ -7,6 +7,7 @@ class ThumbnailListPage extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final radarData = buildMagicThumbnailData();
     return Scaffold(
       backgroundColor: const Color(0xFF0D1117),
       appBar: AppBar(
@@ -17,13 +18,12 @@ class ThumbnailListPage extends StatelessWidget {
         padding: const EdgeInsets.all(16),
         itemCount: 4,
         separatorBuilder: (_, __) => const SizedBox(height: 12),
-        itemBuilder: (_, __) => _buildCard(),
+        itemBuilder: (_, __) => RepaintBoundary(child: _buildCard(radarData)),
       ),
     );
   }
 
-  Widget _buildCard() {
-    final radarData = buildMagicThumbnailData();
+  Widget _buildCard(PolarisRadarData radarData) {
     return Container(
       decoration: BoxDecoration(
         color: const Color(0xFF1F2125),
@@ -88,6 +88,7 @@ class ThumbnailListPage extends StatelessWidget {
             child: PolarisRadarChart(
               data: radarData,
               interactive: false,
+              duration: Duration.zero,
               touchData: const PolarisRadarTouchData(showTooltip: false),
             ),
           ),

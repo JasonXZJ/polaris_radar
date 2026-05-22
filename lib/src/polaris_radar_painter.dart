@@ -4,6 +4,64 @@ import 'package:flutter/material.dart';
 
 import 'polaris_radar_data.dart';
 
+// ── TextPainter 跨帧缓存 ─────────────────────────────────────────────────────
+
+/// 缓存 tick / axis 标签的 [TextPainter]，避免每帧重复 layout。
+///
+/// key 同时包含文本、样式与布局约束；TextStyle 与 String 自带 ==，
+/// 因此即使外部 data 实例变化但文本/样式不变，仍能命中。
+class PolarisLabelCache {
+  final Map<_LabelKey, TextPainter> _map = {};
+
+  TextPainter axisLabel(String text, TextStyle style) {
+    return _map.putIfAbsent(_LabelKey(text, style, maxWidth: 80, center: true),
+        () {
+      return TextPainter(
+        text: TextSpan(text: text, style: style),
+        textDirection: TextDirection.ltr,
+        textAlign: TextAlign.center,
+      )..layout(maxWidth: 80);
+    });
+  }
+
+  TextPainter tickLabel(String text, TextStyle style) {
+    return _map.putIfAbsent(_LabelKey(text, style), () {
+      return TextPainter(
+        text: TextSpan(text: text, style: style),
+        textDirection: TextDirection.ltr,
+      )..layout();
+    });
+  }
+
+  void dispose() {
+    for (final tp in _map.values) {
+      tp.dispose();
+    }
+    _map.clear();
+  }
+}
+
+class _LabelKey {
+  const _LabelKey(this.text, this.style,
+      {this.maxWidth = double.infinity, this.center = false});
+
+  final String text;
+  final TextStyle style;
+  final double maxWidth;
+  final bool center;
+
+  @override
+  bool operator ==(Object other) =>
+      other is _LabelKey &&
+      other.text == text &&
+      other.style == style &&
+      other.maxWidth == maxWidth &&
+      other.center == center;
+
+  @override
+  int get hashCode => Object.hash(text, style, maxWidth, center);
+}
+
 /// 雷达图核心绘制器。
 ///
 /// 绘制顺序：
@@ -18,12 +76,14 @@ class PolarisRadarPainter extends CustomPainter {
     this.touchedResponse,
     this.touchData,
     this.selectedDataSetIndex,
+    this.labelCache,
   });
 
   final PolarisRadarData data;
   final PolarisTouchResponse? touchedResponse;
   final PolarisRadarTouchData? touchData;
   final int? selectedDataSetIndex;
+  final PolarisLabelCache? labelCache;
 
   @override
   void paint(Canvas canvas, Size size) {
@@ -149,10 +209,11 @@ class PolarisRadarPainter extends CustomPainter {
 
       if (text.isEmpty) continue;
 
-      final tp = TextPainter(
-        text: TextSpan(text: text, style: style),
-        textDirection: TextDirection.ltr,
-      )..layout();
+      final tp = labelCache?.tickLabel(text, style) ??
+          (TextPainter(
+            text: TextSpan(text: text, style: style),
+            textDirection: TextDirection.ltr,
+          )..layout());
 
       tp.paint(canvas, Offset(center.dx + 4, center.dy - r - tp.height));
     }
@@ -180,11 +241,12 @@ class PolarisRadarPainter extends CustomPainter {
       final angle = step * i - pi / 2;
       final labelRadius = radius * (1 + data.titlePositionFactor);
 
-      final tp = TextPainter(
-        text: TextSpan(text: data.axisLabels[i], style: style),
-        textDirection: TextDirection.ltr,
-        textAlign: TextAlign.center,
-      )..layout(maxWidth: 80);
+      final tp = labelCache?.axisLabel(data.axisLabels[i], style) ??
+          (TextPainter(
+            text: TextSpan(text: data.axisLabels[i], style: style),
+            textDirection: TextDirection.ltr,
+            textAlign: TextAlign.center,
+          )..layout(maxWidth: 80));
 
       final ax = center.dx + labelRadius * cos(angle);
       final ay = center.dy + labelRadius * sin(angle);

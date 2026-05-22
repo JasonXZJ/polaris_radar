@@ -84,6 +84,9 @@ class _PolarisRadarChartState extends State<PolarisRadarChart>
   late Animation<double> _animation;
   late _PolarisRadarDataTween _tween;
   PolarisTouchResponse? _touchedResponse;
+  final PolarisLabelCache _labelCache = PolarisLabelCache();
+
+  bool get _isAnimated => widget.duration > Duration.zero;
 
   @override
   void initState() {
@@ -98,14 +101,20 @@ class _PolarisRadarChartState extends State<PolarisRadarChart>
     super.didUpdateWidget(old);
 
     if (old.data != widget.data) {
-      // 以当前动画中间帧作为新起点，保证数值连续
-      _tween = _PolarisRadarDataTween(
-        begin: _tween.lerp(_animation.value),
-        end: widget.data,
-      );
-      _controller
-        ..duration = widget.duration
-        ..forward(from: 0);
+      if (_isAnimated) {
+        // 以当前动画中间帧作为新起点，保证数值连续
+        _tween = _PolarisRadarDataTween(
+          begin: _tween.lerp(_animation.value),
+          end: widget.data,
+        );
+        _controller
+          ..duration = widget.duration
+          ..forward(from: 0);
+      } else {
+        // 静态模式：直接跳到终态，不启动 ticker
+        _tween = _PolarisRadarDataTween(begin: widget.data, end: widget.data);
+        _controller.value = 1.0;
+      }
     }
 
     if (old.curve != widget.curve) {
@@ -116,6 +125,7 @@ class _PolarisRadarChartState extends State<PolarisRadarChart>
   @override
   void dispose() {
     _controller.dispose();
+    _labelCache.dispose();
     super.dispose();
   }
 
@@ -124,7 +134,7 @@ class _PolarisRadarChartState extends State<PolarisRadarChart>
     final renderBox = context.findRenderObject() as RenderBox;
     final localPos = renderBox.globalToLocal(details.globalPosition);
 
-    final data = _tween.lerp(_animation.value);
+    final data = _isAnimated ? _tween.lerp(_animation.value) : widget.data;
     if (data.dataSets.isEmpty || data.axisLabels.length < 3) return;
 
     final size = renderBox.size;
@@ -233,21 +243,38 @@ class _PolarisRadarChartState extends State<PolarisRadarChart>
         _touchedResponse!.axisIndex != null &&
         td?.showTooltip == true;
 
-    Widget chart = AnimatedBuilder(
-      animation: _animation,
-      builder: (_, __) {
-        final currentData = _tween.lerp(_animation.value);
-        return CustomPaint(
-          size: Size.infinite,
-          painter: PolarisRadarPainter(
-            data: currentData,
-            touchedResponse: _touchedResponse,
-            touchData: td,
-            selectedDataSetIndex: widget.selectedDataSetIndex,
-          ),
-        );
-      },
-    );
+    Widget chart;
+    if (_isAnimated) {
+      chart = AnimatedBuilder(
+        animation: _animation,
+        builder: (_, __) {
+          final currentData = _tween.lerp(_animation.value);
+          return CustomPaint(
+            size: Size.infinite,
+            painter: PolarisRadarPainter(
+              data: currentData,
+              touchedResponse: _touchedResponse,
+              touchData: td,
+              selectedDataSetIndex: widget.selectedDataSetIndex,
+              labelCache: _labelCache,
+            ),
+          );
+        },
+      );
+    } else {
+      chart = CustomPaint(
+        size: Size.infinite,
+        painter: PolarisRadarPainter(
+          data: widget.data,
+          touchedResponse: _touchedResponse,
+          touchData: td,
+          selectedDataSetIndex: widget.selectedDataSetIndex,
+          labelCache: _labelCache,
+        ),
+      );
+    }
+
+    chart = RepaintBoundary(child: chart);
 
     if (isInteractive) {
       chart = GestureDetector(

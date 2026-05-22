@@ -235,4 +235,74 @@ void main() {
       expect(td.highlightRadiusFactor, 1.8);
     });
   });
+
+  group('equality', () {
+    test('RadarLineStyle == compares color/width/dashArray deeply', () {
+      const a = RadarLineStyle(
+        color: Color(0xFF112233),
+        width: 2,
+        dashArray: [4, 2],
+      );
+      const b = RadarLineStyle(
+        color: Color(0xFF112233),
+        width: 2,
+        dashArray: [4, 2],
+      );
+      const c = RadarLineStyle(
+        color: Color(0xFF112233),
+        width: 2,
+        dashArray: [4, 3],
+      );
+      expect(a, equals(b));
+      expect(a.hashCode, b.hashCode);
+      expect(a, isNot(equals(c)));
+    });
+
+    test('PolarisDataSet == compares dataEntries deeply', () {
+      const a = PolarisDataSet(dataEntries: [10, 20, 30], label: 'x');
+      const b = PolarisDataSet(dataEntries: [10, 20, 30], label: 'x');
+      const c = PolarisDataSet(dataEntries: [10, 20, 31], label: 'x');
+      expect(a, equals(b));
+      expect(a.hashCode, b.hashCode);
+      expect(a, isNot(equals(c)));
+    });
+
+    test('PolarisRadarData == short-circuits identical instances', () {
+      final data = PolarisRadarData(
+        axisLabels: const ['A', 'B', 'C'],
+        dataSets: const [PolarisDataSet(dataEntries: [1, 2, 3])],
+      );
+      // 同一实例
+      expect(identical(data, data), isTrue);
+      expect(data, equals(data));
+    });
+
+    test('PolarisRadarData == returns true for semantically equal instances', () {
+      final a = PolarisRadarData(
+        axisLabels: const ['A', 'B', 'C'],
+        dataSets: const [PolarisDataSet(dataEntries: [1, 2, 3])],
+        maxValue: 100,
+      );
+      final b = PolarisRadarData(
+        axisLabels: const ['A', 'B', 'C'],
+        dataSets: const [PolarisDataSet(dataEntries: [1, 2, 3])],
+        maxValue: 100,
+      );
+      expect(identical(a, b), isFalse);
+      expect(a, equals(b));
+      expect(a.hashCode, b.hashCode);
+    });
+
+    test('PolarisRadarData == detects nested dataEntries difference', () {
+      final a = PolarisRadarData(
+        axisLabels: const ['A', 'B', 'C'],
+        dataSets: const [PolarisDataSet(dataEntries: [1, 2, 3])],
+      );
+      final b = PolarisRadarData(
+        axisLabels: const ['A', 'B', 'C'],
+        dataSets: const [PolarisDataSet(dataEntries: [1, 2, 4])],
+      );
+      expect(a, isNot(equals(b)));
+    });
+  });
 }

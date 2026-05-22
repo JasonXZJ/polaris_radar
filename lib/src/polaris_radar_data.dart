@@ -1,5 +1,6 @@
 import 'dart:ui';
 
+import 'package:flutter/foundation.dart';
 import 'package:flutter/material.dart';
 
 /// 雷达图整体网格形状
@@ -35,6 +36,18 @@ class RadarLineStyle {
     color: Colors.transparent,
     width: 0,
   );
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is RadarLineStyle &&
+        other.color == color &&
+        other.width == width &&
+        listEquals(other.dashArray, dashArray);
+  }
+
+  @override
+  int get hashCode => Object.hash(color, width, Object.hashAll(dashArray ?? const []));
 }
 
 /// 一条雷达折线的完整描述。
@@ -82,6 +95,30 @@ class PolarisDataSet {
       label: other.label,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is PolarisDataSet &&
+        listEquals(other.dataEntries, dataEntries) &&
+        other.fillColor == fillColor &&
+        other.fillGradient == fillGradient &&
+        other.lineStyle == lineStyle &&
+        other.pointShape == pointShape &&
+        other.pointSize == pointSize &&
+        other.label == label;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        Object.hashAll(dataEntries),
+        fillColor,
+        fillGradient,
+        lineStyle,
+        pointShape,
+        pointSize,
+        label,
+      );
 
   PolarisDataSet copyWith({
     List<double>? dataEntries,
@@ -206,6 +243,40 @@ class PolarisRadarData {
           lerpDouble(titlePositionFactor, other.titlePositionFactor, t)!,
     );
   }
+
+  @override
+  bool operator ==(Object other) {
+    if (identical(this, other)) return true;
+    return other is PolarisRadarData &&
+        listEquals(other.dataSets, dataSets) &&
+        listEquals(other.axisLabels, axisLabels) &&
+        other.maxValue == maxValue &&
+        other.minValue == minValue &&
+        other.tickCount == tickCount &&
+        listEquals(other.tickLabels, tickLabels) &&
+        other.tickLabelStyle == tickLabelStyle &&
+        other.axisLabelStyle == axisLabelStyle &&
+        other.gridLineStyle == gridLineStyle &&
+        other.axisLineStyle == axisLineStyle &&
+        other.backgroundColor == backgroundColor &&
+        other.gridShape == gridShape &&
+        other.titlePositionFactor == titlePositionFactor;
+  }
+
+  @override
+  int get hashCode => Object.hash(
+        Object.hashAll(dataSets),
+        Object.hashAll(axisLabels),
+        maxValue,
+        minValue,
+        tickCount,
+        tickLabels == null ? null : Object.hashAll(tickLabels!),
+        tickLabelStyle,
+        axisLabelStyle,
+        gridLineStyle,
+        axisLineStyle,
+        Object.hash(backgroundColor, gridShape, titlePositionFactor),
+      );
 
   PolarisRadarData copyWith({
     List<PolarisDataSet>? dataSets,
