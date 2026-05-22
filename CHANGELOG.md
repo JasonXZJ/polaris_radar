@@ -1,13 +1,13 @@
 ## 1.0.0
 
 - Initial stable release.
-- 雷达图 widget with implicit animations (`PolarisRadarChart`).
-- `PolarisRadarData` / `PolarisDataSet` 数据模型，支持 `==` / `hashCode` 深比较。
-- 每条数据集独立边框：实线 / 虚线（`RadarLineStyle.dashArray`）。
-- 顶点标记形状：`circle` / `square` / `diamond` / `triangle` / `none`。
-- 网格形状：圆形 / 多边形（`RadarGridShape`）。
-- 图例组件 `RadarLegendItem`，支持选中高亮。
-- 触摸交互：顶点命中 / 边命中 / tooltip 浮层。
-- `selectedDataSetIndex` 外部控制图集高亮。
-- `duration: Duration.zero` 时跳过动画链路（静态渲染）。
-- `PolarisLabelCache` 跨帧缓存 TextPainter，减少缩略图场景重绘开销。
+- Radar chart widget with implicit animations (`PolarisRadarChart`).
+- `PolarisRadarData` / `PolarisDataSet` data model with `==` / `hashCode` deep comparison.
+- Per-dataset borders: solid or dashed (`RadarLineStyle.dashArray`).
+- Vertex marker shapes: `circle` / `square` / `diamond` / `triangle` / `none`.
+- Grid shapes: circle or polygon (`RadarGridShape`).
+- Legend widget `RadarLegendItem` with selection highlighting.
+- Touch interaction: vertex hit / edge hit / tooltip overlay.
+- `selectedDataSetIndex` for external dataset highlight control.
+- `duration: Duration.zero` skips animation pipeline (static rendering).
+- `PolarisLabelCache` caches TextPainter across frames, reducing repaint cost in thumbnail scenarios.
