@@ -2,7 +2,7 @@ name: polaris_radar
 description: >
   A highly customizable Flutter radar chart with per-dataset dashed borders,
   custom vertex markers (circle/square/diamond/triangle), and implicit animations.
-version: 1.0.0
+version: 1.0.1
 homepage: https://github.com/JasonXZJ/polaris_radar
 repository: https://github.com/JasonXZJ/polaris_radar
 issue_tracker: https://github.com/JasonXZJ/polaris_radar/issues
